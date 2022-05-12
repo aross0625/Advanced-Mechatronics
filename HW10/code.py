@@ -21,5 +21,5 @@ real, imaginary = np.fft.fft(signal)
 
 # Plotting
 for i in real:
-    print("("+str(i)+",)")  # print with plotting format
+    print("("+str(i)+",)")
     time.sleep(0.05)
