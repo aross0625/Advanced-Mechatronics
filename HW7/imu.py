@@ -1,5 +1,5 @@
 import serial
-ser = serial.Serial('/dev/tty.usbserial-0232C10E',230400)
+ser = serial.Serial('/dev/tty.usbserial-0232BF33',230400)
 print('Opening port: ')
 print(ser.name)
 
@@ -29,7 +29,7 @@ while read_samples > 1:
         temp.append(data[7])
 print('Data collection complete')
 # plot it
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 t = range(len(ax)) # time array
 plt.plot(t,ax,'r*-',t,ay,'b*-',t,az,'k*-')
 plt.ylabel('G value')
