@@ -35,7 +35,7 @@
 #pragma config PMDL1WAY = OFF // allow multiple reconfigurations
 #pragma config IOL1WAY = OFF // allow multiple reconfigurations
 
-#define PIC32_SYS_FREQ 48000000 // 48 million Hz
+#define PIC32_SYS_FREQ 48000000ul // 48 million Hz
 #define PIC32_DESIRED_BAUD 230400 // Baudrate for RS232
 
 #define NUM_DATA_PNTS 300 // how many data points to collect at 100Hz
@@ -95,33 +95,34 @@ int main() {
     while (1) {
 
         blink();
+
+        
         WriteUART1("Enter Key\r\n");
         ReadUART1(m_in, 100); // wait for a newline
         WriteUART1("This is Working\r\n");
 
+        // collect data
+        for (i = 0; i < NUM_DATA_PNTS; i++) {
+            _CP0_SET_COUNT(0);
+            // read IMU
+            burst_read_mpu6050(IMU_buf);
+            ax[i] = conv_xXL(IMU_buf);
+            ay[i] = conv_yXL(IMU_buf);
+            az[i] = conv_zXL(IMU_buf);
+            gx[i] = conv_xG(IMU_buf);
+            gy[i] = conv_yG(IMU_buf);
+            gz[i] = conv_zG(IMU_buf);
+            temp[i] = conv_temp(IMU_buf);
 
-        //        // collect data
-        //        for (i = 0; i < NUM_DATA_PNTS; i++) {
-        //            _CP0_SET_COUNT(0);
-        //            // read IMU
-        //            burst_read_mpu6050(IMU_buf);
-        //            ax[i] = conv_xXL(IMU_buf);
-        //            ay[i] = conv_yXL(IMU_buf);
-        //            az[i] = conv_zXL(IMU_buf);
-        //            gx[i] = conv_xG(IMU_buf);
-        //            gy[i] = conv_yG(IMU_buf);
-        //            gz[i] = conv_zG(IMU_buf);
-        //            temp[i] = conv_temp(IMU_buf);
-        //
-        //            while (_CP0_GET_COUNT() < 24000000 / 2 / 100) {
-        //            }
-        //        }
-        //
-        //        // print data
-        //        for (i = 0; i < NUM_DATA_PNTS; i++) {
-        //            sprintf(m_out, "%d %f %f %f %f %f %f %f\r\n", NUM_DATA_PNTS - i, ax[i], ay[i], az[i], gx[i], gy[i], gz[i], temp[i]);
-        //            WriteUART1(m_out);
-        //        }
+            while (_CP0_GET_COUNT() < 24000000 / 2 / 100) {
+            }
+        }
+
+        // print data
+        for (i = 0; i < NUM_DATA_PNTS; i++) {
+            sprintf(m_out, "%d %f %f %f %f %f %f %f\r\n", NUM_DATA_PNTS - i, ax[i], ay[i], az[i], gx[i], gy[i], gz[i], temp[i]);
+            WriteUART1(m_out);
+        }
 
     }
 }
